@@ -86,8 +86,8 @@ const TOOLBAR_ITEMS: ToolbarItems[] = [
 
 function createPreset(
     type: "basic" | "standard" | "full",
-    templates: string = "default",
-    updatePlugins: boolean = false
+    templates = "default",
+    updatePlugins = false
 ): CKEditorConfig {
     const config: CKEditorConfig = {};
     let toolbarGroup: Array<ToolbarGroup | string> = [];
@@ -127,8 +127,8 @@ function createPreset(
 function createCustomToolbar(
     groups: Array<string | ToolbarItems>,
     withGroupNames = true,
-    templates: string = "default",
-    updatePlugins: boolean = false
+    templates = "default",
+    updatePlugins = false
 ): CKEditorConfig {
     if (withGroupNames) {
         return {
@@ -144,12 +144,12 @@ function createCustomToolbar(
                 extraPlugins:
                     "save,templates,newpage,print,forms,find,selectall,div,divarea,justify,bidi,language,font,colorbutton,showblocks,smiley",
                 toolbar: groups,
-                templates: templates
+                templates
             };
         } else {
             return {
                 toolbar: groups,
-                templates: templates
+                templates
             };
         }
     }

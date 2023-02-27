@@ -50,11 +50,7 @@ export function defineEnterMode(type: string): number {
     }
 }
 
-export function getPreset(
-    type: PresetEnum,
-    templates: string = "default",
-    updatePlgugins: boolean = false
-): CKEditorConfig {
+export function getPreset(type: PresetEnum, templates = "default", updatePlgugins = false): CKEditorConfig {
     switch (type) {
         case "standard":
             return createPreset("standard");

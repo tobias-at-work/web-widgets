@@ -34,12 +34,12 @@ interface CKEditorEvent {
 }
 
 class ContentTemplate {
-    title: String;
-    image: String;
-    description: String;
-    html: String;
+    title: string;
+    image: string;
+    description: string;
+    html: string;
 
-    constructor(title: String, image: String, description: String, html: String) {
+    constructor(title: string, image: string, description: string, html: string) {
         this.title = title;
         this.image = image;
         this.description = description;
@@ -167,7 +167,7 @@ export class Editor extends Component<EditorProps> {
             const contentTemplates: ContentTemplate[] = [];
             const mxObjects = datasource.items;
             if (mxObjects) {
-                mxObjects.map(mxObject => {
+                mxObjects.forEach(mxObject => {
                     const contentTemplate: ContentTemplate = new ContentTemplate(
                         this.widgetProps.templateTitleAttribute.get(mxObject).value || "<title>",
                         this.widgetProps.templateImageAttribute.get(mxObject).value || "<description>",
@@ -177,7 +177,7 @@ export class Editor extends Component<EditorProps> {
                     contentTemplates.push(contentTemplate);
                 });
             }
-            var CKEDITOR: CKEditorNamespace = this.namespace;
+            const CKEDITOR: CKEditorNamespace = this.namespace;
             CKEDITOR.addTemplates(this.widgetProps.templates, {
                 imagesPath: window.location.origin + "/img/",
                 templates: contentTemplates
