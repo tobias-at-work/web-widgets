@@ -84,7 +84,11 @@ const TOOLBAR_ITEMS: ToolbarItems[] = [
     { name: "about", items: ["About"] }
 ];
 
-function createPreset(type: "basic" | "standard" | "full"): CKEditorConfig {
+function createPreset(
+    type: "basic" | "standard" | "full",
+    templates: string = "default",
+    updatePlugins: boolean = false
+): CKEditorConfig {
     const config: CKEditorConfig = {};
     let toolbarGroup: Array<ToolbarGroup | string> = [];
     switch (type) {
@@ -107,9 +111,13 @@ function createPreset(type: "basic" | "standard" | "full"): CKEditorConfig {
             toolbarGroup.splice(6, 0, "/");
             config.toolbarGroups = toolbarGroup;
             config.removeButtons = "";
+            console.info("Setting extraPlugins for full toolbar");
             /* TODO temporary removed exportpdf*/
-            config.extraPlugins =
-                "save,templates,newpage,print,forms,find,selectall,div,divarea,justify,bidi,language,font,colorbutton,showblocks";
+            if (updatePlugins) {
+                config.extraPlugins =
+                    "save,templates,newpage,print,forms,find,selectall,div,divarea,justify,bidi,language,font,colorbutton,showblocks";
+            }
+            config.templates = templates;
             break;
         default:
             config.toolbarGroups = [...TOOLBAR_GROUP];
@@ -117,7 +125,12 @@ function createPreset(type: "basic" | "standard" | "full"): CKEditorConfig {
     return config;
 }
 
-function createCustomToolbar(groups: Array<string | ToolbarItems>, withGroupNames = true): CKEditorConfig {
+function createCustomToolbar(
+    groups: Array<string | ToolbarItems>,
+    withGroupNames = true,
+    templates: string = "default",
+    updatePlugins: boolean = false
+): CKEditorConfig {
     if (withGroupNames) {
         return {
             toolbar: groups
@@ -127,11 +140,20 @@ function createCustomToolbar(groups: Array<string | ToolbarItems>, withGroupName
                 .filter(item => item)
         };
     } else {
-        return {
-            extraPlugins:
-                "save,templates,newpage,print,forms,find,selectall,div,divarea,justify,bidi,language,font,colorbutton,showblocks,smiley",
-            toolbar: groups
-        };
+        console.info("Setting extraPlugins for custom toolbar");
+        if (updatePlugins) {
+            return {
+                extraPlugins:
+                    "save,templates,newpage,print,forms,find,selectall,div,divarea,justify,bidi,language,font,colorbutton,showblocks,smiley",
+                toolbar: groups,
+                templates: templates
+            };
+        } else {
+            return {
+                toolbar: groups,
+                templates: templates
+            };
+        }
     }
 }
 

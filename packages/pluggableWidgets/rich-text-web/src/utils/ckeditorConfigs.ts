@@ -50,14 +50,18 @@ export function defineEnterMode(type: string): number {
     }
 }
 
-export function getPreset(type: PresetEnum): CKEditorConfig {
+export function getPreset(
+    type: PresetEnum,
+    templates: string = "default",
+    updatePlgugins: boolean = false
+): CKEditorConfig {
     switch (type) {
         case "standard":
             return createPreset("standard");
         case "basic":
             return createPreset("basic");
         case "full":
-            return createPreset("full");
+            return createPreset("full", templates, updatePlgugins);
         default:
             return createPreset("basic");
     }
@@ -71,6 +75,7 @@ export function addPlugin(name: PluginName, config: CKEditorConfig): CKEditorCon
         } else {
             config.extraPlugins = plugin.extraPlugins;
         }
+        console.info("extraPlugins: " + config.extraPlugins);
         Object.assign(config, plugin.config);
     }
     return config;
@@ -112,20 +117,21 @@ export function defineAdvancedGroups(widgetProps: RichTextContainerProps): Toolb
     return toolbarArray;
 }
 
-export function getToolbarConfig(widgetProps: RichTextContainerProps): CKEditorConfig {
-    const { preset, toolbarConfig } = widgetProps;
+export function getToolbarConfig(widgetProps: RichTextContainerProps, updatePlugins: boolean): CKEditorConfig {
+    const { preset, toolbarConfig, templates } = widgetProps;
 
+    console.info("Invoking getToolbarConfig");
     if (preset !== "custom") {
-        return getPreset(preset);
+        return getPreset(preset, templates, updatePlugins);
     }
 
     const isBasic = toolbarConfig === "basic";
     const groupItems = isBasic ? defineBasicGroups(widgetProps) : defineAdvancedGroups(widgetProps);
 
-    return createCustomToolbar(groupItems, isBasic);
+    return createCustomToolbar(groupItems, isBasic, templates, updatePlugins);
 }
 
-export function getCKEditorConfig(widgetProps: RichTextContainerProps): CKEditorConfig {
+export function getCKEditorConfig(widgetProps: RichTextContainerProps, updatePlugins: boolean): CKEditorConfig {
     const {
         codeHighlight,
         advancedContentFilter,
@@ -161,7 +167,7 @@ export function getCKEditorConfig(widgetProps: RichTextContainerProps): CKEditor
         disableNativeSpellChecker: !spellChecker,
         readOnly: stringAttribute.readOnly,
         removeButtons: "",
-        ...getToolbarConfig(widgetProps)
+        ...getToolbarConfig(widgetProps, updatePlugins)
     };
 
     const plugins: PluginName[] = ["openlink", "indent", "indentlist"];
@@ -170,8 +176,10 @@ export function getCKEditorConfig(widgetProps: RichTextContainerProps): CKEditor
         plugins.push("codesnippet");
     }
 
-    for (const plugin of plugins) {
-        addPlugin(plugin, config);
+    if (updatePlugins) {
+        for (const plugin of plugins) {
+            addPlugin(plugin, config);
+        }
     }
 
     if (advancedContentFilter === "custom") {

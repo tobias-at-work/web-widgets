@@ -9,7 +9,11 @@ export function RichText(props: RichTextContainerProps): JSX.Element | null {
     const { width: w, height: h, widthUnit, heightUnit, readOnlyStyle, name, id } = props;
     const [element, setElement] = useState<HTMLElement | null>(null);
 
-    if (props.stringAttribute.status !== "available") {
+    // Also wait for templateDatasource available to avoid editor-element-conflict exception
+    if (
+        props.stringAttribute.status !== "available" ||
+        (props.templateDatasource && props.templateDatasource.status !== "available")
+    ) {
         return <img src={loadingCircleSvg} className="widget-rich-text-loading-spinner" alt="" aria-hidden />;
     }
 

@@ -240,6 +240,44 @@
                 </property>
             </propertyGroup>
         </propertyGroup>
+        <propertyGroup caption="Content templates">
+            <property key="templates" type="string" defaultValue="default">
+                <caption>Template name</caption>
+                <description>Name of the template to be used. Default is 'default'.</description>
+            </property>
+            <property key="templateDatasource" type="datasource" isList="true">
+                <caption>Template source</caption>
+                <description>The datasource providing a list of actual content templates for the rich text editor.</description>
+            </property>
+            <property key="templateTitleAttribute" type="attribute" required="true" dataSource="templateDatasource">
+                <caption>Title attribute</caption>
+                <description>The title of the current content template.</description>
+                <attributeTypes>
+                    <attributeType name="String" />
+                </attributeTypes>
+            </property>
+            <property key="templateImageAttribute" type="attribute" required="true" dataSource="templateDatasource">
+                <caption>Image attribute</caption>
+                <description>The image of the current content template.</description>
+                <attributeTypes>
+                    <attributeType name="String" />
+                </attributeTypes>
+            </property>
+            <property key="templateDescriptionAttribute" type="attribute" required="true" dataSource="templateDatasource">
+                <caption>Description attribute</caption>
+                <description>The description of the current content template.</description>
+                <attributeTypes>
+                    <attributeType name="String" />
+                </attributeTypes>
+            </property>
+            <property key="templateHtmlAttribute" type="attribute" required="true" dataSource="templateDatasource">
+                <caption>HTML attribute</caption>
+                <description>The HTML of the current content template.</description>
+                <attributeTypes>
+                    <attributeType name="String" />
+                </attributeTypes>
+            </property>
+        </propertyGroup>
         <propertyGroup caption="Events">
             <propertyGroup caption="Events">
                 <property key="onKeyPress" type="action">

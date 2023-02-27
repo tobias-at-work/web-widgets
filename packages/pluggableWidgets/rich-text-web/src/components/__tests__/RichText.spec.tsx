@@ -5,7 +5,7 @@ import { CKEditorConfig } from "ckeditor4-react";
 import { getPreset, defineEnterMode, getToolbarGroupByName, defineAdvancedGroups } from "../../utils/ckeditorConfigs";
 import { mount, ReactWrapper } from "enzyme";
 import renderer from "react-test-renderer";
-import { getDimensions, EditableValueBuilder } from "@mendix/pluggable-widgets-commons";
+import { getDimensions, EditableValueBuilder, ListValueBuilder } from "@mendix/pluggable-widgets-commons";
 import { TOOLBAR_GROUP, ToolbarGroup } from "../../utils/ckeditorPresets";
 import { AdvancedConfigType, RichTextContainerProps } from "../../../typings/RichTextProps";
 
@@ -44,7 +44,9 @@ const defaultRichTextProps: RichTextContainerProps = {
     codeHighlight: false,
     allowedContent: "",
     disallowedContent: "",
-    id: "1.Dev.Test_ListenTo.richText1_x_1"
+    id: "1.Dev.Test_ListenTo.richText1_x_1",
+    templates: "default",
+    templateDatasource: ListValueBuilder().simple()
 };
 
 describe("RichText", () => {

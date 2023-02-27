@@ -1,10 +1,17 @@
 import { debounce } from "@mendix/pluggable-widgets-commons";
-import { CKEditorEventPayload, CKEditorHookProps, CKEditorInstance } from "ckeditor4-react";
+import {
+    CKEditorEventAction,
+    CKEditorEventPayload,
+    CKEditorHookProps,
+    CKEditorInstance,
+    CKEditorNamespace
+} from "ckeditor4-react";
 import { Component, createElement } from "react";
 import { RichTextContainerProps } from "../../typings/RichTextProps";
 import { getCKEditorConfig } from "../utils/ckeditorConfigs";
 import { MainEditor } from "./MainEditor";
 import DOMPurify from "dompurify";
+import { ValueStatus } from "mendix";
 
 const FILE_SIZE_LIMIT = 1048576; // Binary bytes for 1MB
 
@@ -26,6 +33,20 @@ interface CKEditorEvent {
     stop(): void;
 }
 
+class ContentTemplate {
+    title: String;
+    image: String;
+    description: String;
+    html: String;
+
+    constructor(title: String, image: String, description: String, html: String) {
+        this.title = title;
+        this.image = image;
+        this.description = description;
+        this.html = html;
+    }
+}
+
 export class Editor extends Component<EditorProps> {
     widgetProps: RichTextContainerProps;
     editor: CKEditorInstance | null;
@@ -33,54 +54,69 @@ export class Editor extends Component<EditorProps> {
     editorKey: number;
     editorScript = "widgets/ckeditor/ckeditor.js";
     element: HTMLElement;
+    namespace: CKEditorNamespace;
     lastSentValue: string | undefined;
 
     constructor(props: EditorProps) {
         super(props);
+
         // Props are read only, so, make a copy;
+        console.info("Constructing new editor");
         this.widgetProps = { ...this.props.widgetProps };
         this.element = this.props.element;
         this.editorKey = this.getNewKey();
-        this.editorHookProps = this.getNewEditorHookProps();
+        this.editorHookProps = this.getNewEditorHookProps(true);
         this.onChange = debounce(this.onChange.bind(this), 500);
         this.onKeyPress = this.onKeyPress.bind(this);
         this.onPasteContent = this.onPasteContent.bind(this);
         this.onDropContent = this.onDropContent.bind(this);
+        console.info("New editor constructed");
     }
 
-    setNewRenderProps(): void {
+    setNewRenderProps(updatePlugins: boolean): void {
+        console.info("Setting new render props");
         this.widgetProps = { ...this.props.widgetProps };
-        this.element = this.props.element;
+        if (updatePlugins) {
+            this.element = this.props.element;
+        }
         this.editorKey = this.getNewKey();
-        this.editorHookProps = this.getNewEditorHookProps();
+        this.editorHookProps = this.getNewEditorHookProps(updatePlugins || true);
     }
 
     getRenderProps(): [number, EditorHookProps] {
         if (this.shouldRebuildEditor()) {
-            this.setNewRenderProps();
+            this.setNewRenderProps(true);
+        } else if (this.shouldUpdateEditor()) {
+            this.setNewRenderProps(false);
         }
-
         return [this.editorKey, this.editorHookProps];
     }
 
     shouldRebuildEditor(): boolean {
-        const keys = Object.keys(this.widgetProps) as Array<keyof RichTextContainerProps>;
+        if (this.element !== this.props.element) {
+            console.info("Element has changed.");
+            return true;
+        } else {
+            return false;
+        }
+    }
 
+    shouldUpdateEditor(): boolean {
+        const keys = Object.keys(this.widgetProps) as Array<keyof RichTextContainerProps>;
         const prevProps = this.widgetProps;
         const nextProps = this.props.widgetProps;
-
-        if (this.element !== this.props.element) {
-            return true;
-        }
-
         return keys.some(key => {
             // We skip stringAttribute as it always changes. And we
             // handle updates in componentDidUpdate method.
             if (key === "stringAttribute") {
                 return false;
             }
-
-            return prevProps[key] !== nextProps[key];
+            if (prevProps[key] !== nextProps[key]) {
+                console.info("Property " + key + " has changed.");
+                return true;
+            } else {
+                return false;
+            }
         });
     }
 
@@ -92,23 +128,32 @@ export class Editor extends Component<EditorProps> {
         return new URL(this.editorScript, window.mx.remoteUrl).toString();
     }
 
-    getNewEditorHookProps(): EditorHookProps {
+    getNewEditorHookProps(updatePlugins: boolean): EditorHookProps {
+        console.info("Getting new EditorHookProps");
         const onInstanceReady = this.onInstanceReady.bind(this);
+        const onPluginsLoaded = this.onPluginsLoaded.bind(this);
         const onDestroy = this.onDestroy.bind(this);
-        const config = getCKEditorConfig(this.widgetProps);
+        const config = getCKEditorConfig(this.widgetProps, updatePlugins);
 
         return {
-            element: this.element,
+            element: this.props.element,
             editorUrl: this.getEditorUrl(),
             type: this.widgetProps.editorType,
+            dispatchEvent: ({ type, payload }) => {
+                if (type === CKEditorEventAction.beforeLoad) {
+                    console.info("Before load invoked for editor " + this.widgetProps.name);
+                    this.namespace = payload;
+                    console.info("Namespace stored in editor " + this.widgetProps.name);
+                }
+            },
             // Here we ignore hook API and instead use
             // editor instance to subscribe to events.
-            subscribeTo: [],
             config: Object.assign(config, {
                 on: {
                     instanceReady(this: CKEditorInstance) {
                         onInstanceReady(this);
                     },
+                    pluginsLoaded: onPluginsLoaded,
                     destroy: onDestroy
                 }
             })
@@ -117,9 +162,49 @@ export class Editor extends Component<EditorProps> {
 
     onInstanceReady(editor: CKEditorInstance): void {
         this.editor = editor;
+        console.info("Instance ready for editor " + this.widgetProps.name);
         this.updateEditorState({
             data: this.widgetProps.stringAttribute.value
         });
+    }
+
+    onPluginsLoaded(): void {
+        console.info("Plugins loaded for editor " + this.widgetProps.name);
+        const datasource = this.widgetProps.templateDatasource;
+        if (datasource === undefined) {
+            console.warn("Templates datasource not set for editor " + this.widgetProps.name);
+        } else if (datasource.status === ValueStatus.Available) {
+            console.info("Templates are available for editor " + this.widgetProps.name);
+            const contentTemplates: ContentTemplate[] = [];
+            const mxObjects = datasource.items;
+            if (mxObjects) {
+                console.info("MxObjects exist");
+                mxObjects.map(mxObject => {
+                    const contentTemplate: ContentTemplate = new ContentTemplate(
+                        this.widgetProps.templateTitleAttribute.get(mxObject).value || "<title>",
+                        this.widgetProps.templateImageAttribute.get(mxObject).value || "<description>",
+                        this.widgetProps.templateDescriptionAttribute.get(mxObject).value || "",
+                        this.widgetProps.templateHtmlAttribute.get(mxObject).value || "[html]"
+                    );
+                    contentTemplates.push(contentTemplate);
+                    console.info("Found " + JSON.stringify(contentTemplate));
+                });
+            } else {
+                console.info("MxObjects are empty for editor " + this.widgetProps.name);
+            }
+            var CKEDITOR: CKEditorNamespace = this.namespace;
+            CKEDITOR.addTemplates(this.widgetProps.templates, {
+                imagesPath: CKEDITOR.getUrl(CKEDITOR.plugins.getPath("templates") + "templates/images/"),
+                templates: contentTemplates
+            });
+            console.info("Templates added for editor " + this.widgetProps.name);
+        } else if (datasource.status === ValueStatus.Loading) {
+            console.warn("Templates are still loading for editor " + this.widgetProps.name);
+        } else if (datasource.status === ValueStatus.Unavailable) {
+            console.warn("Templates are not available for editor " + this.widgetProps.name);
+        } else {
+            console.error("Template status unknown for editor " + this.widgetProps.name);
+        }
     }
 
     onDestroy(): void {
@@ -195,6 +280,7 @@ export class Editor extends Component<EditorProps> {
     updateEditorState(
         args: { data: string | undefined; readOnly: boolean } | { data: string | undefined } | { readOnly: boolean }
     ): void {
+        console.info("Updating editor state");
         this.removeListeners();
 
         if ("readOnly" in args) {
@@ -215,12 +301,14 @@ export class Editor extends Component<EditorProps> {
         } else {
             this.addListeners();
         }
+        console.info("Editor state updated");
     }
 
     updateEditor(
         prevAttr: RichTextContainerProps["stringAttribute"],
         nextAttr: RichTextContainerProps["stringAttribute"]
     ): void {
+        console.info("Updating editor");
         if (this.editor) {
             const shouldUpdateData = nextAttr.value !== prevAttr.value && nextAttr.value !== this.lastSentValue;
 
@@ -243,9 +331,11 @@ export class Editor extends Component<EditorProps> {
         }
 
         this.lastSentValue = undefined;
+        console.info("Editor updated");
     }
 
     componentDidUpdate(): void {
+        console.info("Update component");
         const prevAttr = this.widgetProps.stringAttribute;
         const nextAttr = this.props.widgetProps.stringAttribute;
 
@@ -253,6 +343,7 @@ export class Editor extends Component<EditorProps> {
             this.widgetProps.stringAttribute = nextAttr;
             this.updateEditor(prevAttr, nextAttr);
         }
+        console.info("Component updated");
     }
 
     render(): JSX.Element | null {
