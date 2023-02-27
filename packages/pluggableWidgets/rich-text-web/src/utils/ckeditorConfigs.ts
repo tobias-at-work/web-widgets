@@ -75,7 +75,6 @@ export function addPlugin(name: PluginName, config: CKEditorConfig): CKEditorCon
         } else {
             config.extraPlugins = plugin.extraPlugins;
         }
-        console.info("extraPlugins: " + config.extraPlugins);
         Object.assign(config, plugin.config);
     }
     return config;
@@ -120,7 +119,6 @@ export function defineAdvancedGroups(widgetProps: RichTextContainerProps): Toolb
 export function getToolbarConfig(widgetProps: RichTextContainerProps, updatePlugins: boolean): CKEditorConfig {
     const { preset, toolbarConfig, templates } = widgetProps;
 
-    console.info("Invoking getToolbarConfig");
     if (preset !== "custom") {
         return getPreset(preset, templates, updatePlugins);
     }

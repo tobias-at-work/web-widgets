@@ -111,7 +111,6 @@ function createPreset(
             toolbarGroup.splice(6, 0, "/");
             config.toolbarGroups = toolbarGroup;
             config.removeButtons = "";
-            console.info("Setting extraPlugins for full toolbar");
             /* TODO temporary removed exportpdf*/
             if (updatePlugins) {
                 config.extraPlugins =
@@ -140,7 +139,6 @@ function createCustomToolbar(
                 .filter(item => item)
         };
     } else {
-        console.info("Setting extraPlugins for custom toolbar");
         if (updatePlugins) {
             return {
                 extraPlugins:
