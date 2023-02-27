@@ -194,7 +194,7 @@ export class Editor extends Component<EditorProps> {
             }
             var CKEDITOR: CKEditorNamespace = this.namespace;
             CKEDITOR.addTemplates(this.widgetProps.templates, {
-                imagesPath: CKEDITOR.getUrl(CKEDITOR.plugins.getPath("templates") + "templates/images/"),
+                imagesPath: window.location.origin + "/img/",
                 templates: contentTemplates
             });
             console.info("Templates added for editor " + this.widgetProps.name);

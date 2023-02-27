@@ -251,28 +251,28 @@
             </property>
             <property key="templateTitleAttribute" type="attribute" required="true" dataSource="templateDatasource">
                 <caption>Title attribute</caption>
-                <description>The title of the current content template.</description>
+                <description>The name of the title attribute of the current content template.</description>
                 <attributeTypes>
                     <attributeType name="String" />
                 </attributeTypes>
             </property>
             <property key="templateImageAttribute" type="attribute" required="true" dataSource="templateDatasource">
                 <caption>Image attribute</caption>
-                <description>The image of the current content template.</description>
+                <description>The name of the image attribute of the current content template. The datasource must deliver the attribute value in the form {module_name}${image_collection}${image_name}.{image_format}.</description>
                 <attributeTypes>
                     <attributeType name="String" />
                 </attributeTypes>
             </property>
             <property key="templateDescriptionAttribute" type="attribute" required="true" dataSource="templateDatasource">
                 <caption>Description attribute</caption>
-                <description>The description of the current content template.</description>
+                <description>The name of the description attribute of the current content template.</description>
                 <attributeTypes>
                     <attributeType name="String" />
                 </attributeTypes>
             </property>
             <property key="templateHtmlAttribute" type="attribute" required="true" dataSource="templateDatasource">
                 <caption>HTML attribute</caption>
-                <description>The HTML of the current content template.</description>
+                <description>The name of the HTML attribute of the current content template.</description>
                 <attributeTypes>
                     <attributeType name="String" />
                 </attributeTypes>
