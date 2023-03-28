@@ -3,22 +3,14 @@ import { GalleryPreviewProps } from "../typings/GalleryProps";
 import { Gallery as GalleryComponent } from "./components/Gallery";
 import { ObjectItem, GUID } from "mendix";
 
-export function preview(props: GalleryPreviewProps): ReactElement {
+function Preview(props: GalleryPreviewProps): ReactElement {
     const items: ObjectItem[] = Array.from({ length: props.pageSize ?? 5 }).map((_, index) => ({
         id: String(index) as GUID
     }));
-    const caption =
-        props.filterList.length > 0
-            ? props.sortList.length > 0
-                ? "Place filter/sort widgets here"
-                : "Place filter widgets here"
-            : props.sortList.length > 0
-            ? "Place sort widgets here"
-            : "Place widgets here";
-    const isSortableFilterable = props.filterList.length > 0 || props.sortList.length > 0;
+
     return (
         <GalleryComponent
-            className={props.className}
+            className={props.class}
             desktopItems={props.desktopItems!}
             emptyPlaceholderRenderer={useCallback(
                 renderWrapper => (
@@ -28,20 +20,18 @@ export function preview(props: GalleryPreviewProps): ReactElement {
                 ),
                 [props.emptyPlaceholder]
             )}
-            filters={
-                isSortableFilterable ? (
-                    <props.filtersPlaceholder.renderer caption={caption}>
-                        <div />
-                    </props.filtersPlaceholder.renderer>
-                ) : null
+            header={
+                <props.filtersPlaceholder.renderer caption="Place widgets like filter widget(s) and action button(s) here">
+                    <div />
+                </props.filtersPlaceholder.renderer>
             }
-            hasFilters={!!props.filterList.length}
+            showHeader
             hasMoreItems={false}
             items={items}
             itemRenderer={useCallback(
                 renderWrapper => (
                     <props.content.renderer caption="Gallery item: Place widgets here">
-                        {renderWrapper(null, "")}
+                        {renderWrapper(false, null, "")}
                     </props.content.renderer>
                 ),
                 [props.content]
@@ -56,4 +46,8 @@ export function preview(props: GalleryPreviewProps): ReactElement {
             tabletItems={props.tabletItems!}
         />
     );
+}
+
+export function preview(props: GalleryPreviewProps): ReactElement {
+    return createElement(Preview, props);
 }

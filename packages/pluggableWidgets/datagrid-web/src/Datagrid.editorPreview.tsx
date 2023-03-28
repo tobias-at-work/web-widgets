@@ -9,6 +9,7 @@ import { Selectable } from "mendix/preview/Selectable";
 import { ObjectItem, GUID } from "mendix";
 import classNames from "classnames";
 import { isSortable } from "./features/column";
+import { selectionSettings, useOnSelectProps } from "./features/selection";
 
 const dummyColumns: ColumnsPreviewType[] = [
     {
@@ -57,7 +58,8 @@ export function preview(props: DatagridPreviewProps): ReactElement {
     );
 
     const EmptyPlaceholder = props.emptyPlaceholder.renderer;
-
+    const selectActionProps = useOnSelectProps(undefined);
+    const { selectionStatus, selectionMethod } = selectionSettings(props, undefined);
     return (
         <Table
             cellRenderer={useCallback(
@@ -120,11 +122,9 @@ export function preview(props: DatagridPreviewProps): ReactElement {
             )}
             hasMoreItems={false}
             headerFilters={
-                props.showHeaderFilters ? (
-                    <props.filtersPlaceholder.renderer caption="Place filter widget(s) here">
-                        <div />
-                    </props.filtersPlaceholder.renderer>
-                ) : null
+                <props.filtersPlaceholder.renderer caption="Place widgets like filter widget(s) and action button(s) here">
+                    <div />
+                </props.filtersPlaceholder.renderer>
             }
             headerWrapperRenderer={selectableWrapperRenderer}
             numberOfItems={5}
@@ -135,6 +135,11 @@ export function preview(props: DatagridPreviewProps): ReactElement {
             preview
             styles={parseStyle(props.style)}
             valueForSort={useCallback(() => undefined, [])}
+            onSelect={selectActionProps.onSelect}
+            onSelectAll={selectActionProps.onSelectAll}
+            isSelected={selectActionProps.isSelected}
+            selectionStatus={selectionStatus}
+            selectionMethod={selectionMethod}
         />
     );
 }

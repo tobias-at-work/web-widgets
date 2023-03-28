@@ -1,7 +1,7 @@
 {
   "name": "data-widgets",
   "moduleName": "Data Widgets",
-  "version": "2.6.0",
+  "version": "2.6.1",
   "license": "Apache-2.0",
   "copyright": "© Mendix Technology BV 2023. All rights reserved.",
   "private": true,
@@ -21,6 +21,7 @@
       "datagrid-web",
       "dropdown-sort-web",
       "gallery-web",
+      "selection-helper-web",
       "tree-node-web"
     ]
   },
@@ -54,6 +55,7 @@
     "datagrid-web": "workspace:*",
     "dropdown-sort-web": "workspace:*",
     "gallery-web": "workspace:*",
+    "selection-helper-web": "workspace:*",
     "tree-node-web": "workspace:*"
   },
   "devDependencies": {

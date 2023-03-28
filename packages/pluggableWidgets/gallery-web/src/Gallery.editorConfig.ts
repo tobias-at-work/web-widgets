@@ -26,8 +26,8 @@ export function getProperties(
         hidePropertyIn(defaultProperties, values, "emptyPlaceholder");
     }
 
-    if (values.filterList?.length === 0 && values.sortList?.length === 0) {
-        hidePropertyIn(defaultProperties, values, "filtersPlaceholder");
+    if (values.itemSelection === "None") {
+        hidePropertyIn(defaultProperties, values, "onSelectionChange");
     }
 
     if (platform === "web") {
@@ -74,18 +74,16 @@ export function check(values: GalleryPreviewProps): Problem[] {
             message: "Tablet items must be a number between 1 and 12"
         });
     }
+    if (values.itemSelection !== "None" && values.onClick !== null) {
+        errors.push({
+            property: "onClick",
+            message: '"On click action" must be set to "Do nothing" when "Selection" is enabled'
+        });
+    }
     return errors;
 }
 
 export function getPreview(values: GalleryPreviewProps, isDarkMode: boolean): StructurePreviewProps {
-    const filterCaption =
-        values.filterList.length > 0
-            ? values.sortList.length > 0
-                ? "Place filter/sort widgets here"
-                : "Place filter widgets here"
-            : values.sortList.length > 0
-            ? "Place sort widgets here"
-            : "Place widgets here";
     const titleHeader: RowLayoutProps = {
         type: "RowLayout",
         columnSize: "fixed",
@@ -114,7 +112,7 @@ export function getPreview(values: GalleryPreviewProps, isDarkMode: boolean): St
             {
                 type: "DropZone",
                 property: values.filtersPlaceholder,
-                placeholder: filterCaption
+                placeholder: "Place widgets like filter widget(s) and action button(s) here"
             } as DropZoneProps
         ]
     } as RowLayoutProps;
@@ -185,12 +183,7 @@ export function getPreview(values: GalleryPreviewProps, isDarkMode: boolean): St
 
     return {
         type: "Container",
-        children: [
-            titleHeader,
-            ...(values.filterList.length > 0 || values.sortList.length > 0 ? [filters] : []),
-            content,
-            ...footer
-        ]
+        children: [titleHeader, filters, content, ...footer]
     };
 }
 

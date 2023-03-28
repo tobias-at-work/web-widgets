@@ -78,9 +78,8 @@ export function getProperties(
     if (values.showEmptyPlaceholder === "none") {
         hidePropertyIn(defaultProperties, values, "emptyPlaceholder");
     }
-    if (!values.showHeaderFilters) {
-        hidePropertyIn(defaultProperties, values, "filterList");
-    }
+
+    hideSelectionProperties(defaultProperties, values);
 
     changePropertyIn(
         defaultProperties,
@@ -125,7 +124,6 @@ export function getProperties(
                 "columnsHidable",
                 "configurationAttribute",
                 "onConfigurationChange",
-                "showHeaderFilters",
                 "filterList",
                 "filtersPlaceholder",
                 "filterSectionTitle"
@@ -138,6 +136,18 @@ export function getProperties(
     }
 
     return defaultProperties;
+}
+
+function hideSelectionProperties(defaultProperties: Properties, values: DatagridPreviewProps): void {
+    const { itemSelection, itemSelectionMethod } = values;
+
+    if (itemSelection === "None") {
+        hidePropertiesIn(defaultProperties, values, ["itemSelectionMethod", "onSelectionChange"]);
+    }
+
+    if (itemSelection !== "Multi" || itemSelectionMethod !== "checkbox") {
+        hidePropertyIn(defaultProperties, values, "showSelectAllToggle");
+    }
 }
 
 export const getPreview = (
@@ -215,7 +225,7 @@ export const getPreview = (
         borders: true
     })(
         dropzone(
-            dropzone.placeholder("Place filter widget(s) here"),
+            dropzone.placeholder("Place widgets like filter widget(s) and action button(s) here"),
             dropzone.hideDataSourceHeaderIf(canHideDataSourceHeader)
         )(values.filtersPlaceholder)
     );
@@ -282,7 +292,7 @@ export const getPreview = (
     return container()(
         titleHeader,
         ...(canHideDataSourceHeader ? [datasource(values.datasource)()] : []),
-        ...(values.showHeaderFilters && values.filterList.length > 0 ? [headerFilters] : []),
+        headerFilters,
         headers,
         ...Array.from({ length: 5 }).map(() => columns),
         ...footer
@@ -359,6 +369,19 @@ const checkSortingSettings = (
     }
 };
 
+const checkSelectionSettings = (values: DatagridPreviewProps): Problem[] => {
+    if (values.itemSelection !== "None" && values.onClick !== null) {
+        return [
+            {
+                property: "onClick",
+                message: '"On click action" must be set to "Do nothing" when "Selection" is enabled'
+            }
+        ];
+    }
+
+    return [];
+};
+
 export function check(values: DatagridPreviewProps): Problem[] {
     const errors: Problem[] = [];
 
@@ -380,6 +403,8 @@ export function check(values: DatagridPreviewProps): Problem[] {
             });
         }
     });
+
+    errors.push(...checkSelectionSettings(values));
 
     return errors;
 }
