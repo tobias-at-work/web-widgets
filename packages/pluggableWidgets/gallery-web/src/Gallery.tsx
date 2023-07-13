@@ -1,4 +1,4 @@
-import { createElement, ReactElement, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createElement, ReactElement, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { GalleryContainerProps } from "../typings/GalleryProps";
 import { Gallery as GalleryComponent } from "./components/Gallery";
 import {
@@ -12,7 +12,12 @@ import {
 import { FilterCondition } from "mendix/filters";
 import { extractFilters } from "./utils/filters";
 import { and } from "mendix/filters/builders";
-import { executeAction } from "@mendix/pluggable-widgets-commons";
+import {
+    executeAction,
+    getGlobalSelectionContext,
+    useCreateSelectionContextValue,
+    useSelectionHelper
+} from "@mendix/pluggable-widgets-commons";
 
 export function Gallery(props: GalleryContainerProps): ReactElement {
     const viewStateFilters = useRef<FilterCondition | undefined>(undefined);
@@ -23,6 +28,7 @@ export function Gallery(props: GalleryContainerProps): ReactElement {
     const [sortState, setSortState] = useState<SortFunction>();
     const { FilterContext } = useFilterContext();
     const { SortContext } = useSortContext();
+    const SelectionContext = getGlobalSelectionContext();
     const isInfiniteLoad = props.pagination === "virtualScrolling";
     const currentPage = isInfiniteLoad
         ? props.datasource.limit / props.pageSize
@@ -89,10 +95,8 @@ export function Gallery(props: GalleryContainerProps): ReactElement {
         props.datasource.setSortOrder(undefined);
     }
 
-    const isSortableFilterable = props.filterList.length > 0 || props.sortList.length > 0;
-
     const setPage = useCallback(
-        computePage => {
+        (computePage: (prevPage: number) => number) => {
             const newPage = computePage(currentPage);
             if (isInfiniteLoad) {
                 props.datasource.setLimit(newPage * props.pageSize);
@@ -103,19 +107,25 @@ export function Gallery(props: GalleryContainerProps): ReactElement {
         [props.datasource, props.pageSize, isInfiniteLoad, currentPage]
     );
 
+    const selection = useSelectionHelper(props.itemSelection, props.datasource, props.onSelectionChange);
+
+    const selectionContextValue = useCreateSelectionContextValue(selection);
+
+    const showHeader = props.filterList.length > 0 || props.sortList.length > 0 || selection?.type === "Multi";
+
     return (
         <GalleryComponent
             className={props.class}
             desktopItems={props.desktopItems}
             emptyPlaceholderRenderer={useCallback(
-                renderWrapper =>
+                (renderWrapper: (children: ReactNode) => ReactElement) =>
                     props.showEmptyPlaceholder === "custom" ? renderWrapper(props.emptyPlaceholder) : <div />,
                 [props.emptyPlaceholder, props.showEmptyPlaceholder]
             )}
             emptyMessageTitle={props.emptyMessageTitle?.value}
-            filters={useMemo(
+            header={useMemo(
                 () =>
-                    isSortableFilterable ? (
+                    showHeader ? (
                         <FilterContext.Provider
                             value={{
                                 filterDispatcher: prev => {
@@ -141,7 +151,9 @@ export function Gallery(props: GalleryContainerProps): ReactElement {
                                     initialSort: viewStateSort.current
                                 }}
                             >
-                                {props.filtersPlaceholder}
+                                <SelectionContext.Provider value={selectionContextValue}>
+                                    {props.filtersPlaceholder}
+                                </SelectionContext.Provider>
                             </SortContext.Provider>
                         </FilterContext.Provider>
                     ) : null,
@@ -151,23 +163,36 @@ export function Gallery(props: GalleryContainerProps): ReactElement {
                     customFiltersState,
                     filterList,
                     initialFilters,
-                    isSortableFilterable,
+                    showHeader,
                     props.filtersPlaceholder,
                     sortList
                 ]
             )}
-            filtersTitle={props.filterSectionTitle?.value}
-            hasFilters={!!props.filterList.length}
+            headerTitle={props.filterSectionTitle?.value}
+            showHeader={showHeader}
             hasMoreItems={props.datasource.hasMoreItems ?? false}
             items={props.datasource.items ?? []}
             itemRenderer={useCallback(
                 (renderWrapper, item) =>
                     renderWrapper(
+                        !!selection?.isSelected(item),
                         props.content?.get(item),
                         props.itemClass?.get(item)?.value,
-                        props.onClick ? () => executeAction(props.onClick?.get(item)) : undefined
+                        (props.onClick || selection) &&
+                            (() => {
+                                if (props.onClick) {
+                                    executeAction(props.onClick?.get(item));
+                                }
+                                if (selection) {
+                                    if (selection.isSelected(item)) {
+                                        selection.remove(item);
+                                    } else {
+                                        selection.add(item);
+                                    }
+                                }
+                            })
                     ),
-                [props.content, props.itemClass, props.onClick]
+                [props.content, props.itemClass, props.onClick, selection]
             )}
             numberOfItems={props.datasource.totalCount}
             page={currentPage}

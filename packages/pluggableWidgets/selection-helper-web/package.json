@@ -1,0 +1,46 @@
+{
+  "name": "@mendix/selection-helper-web",
+  "widgetName": "SelectionHelper",
+  "version": "1.0.2",
+  "description": "",
+  "copyright": "© Mendix Technology BV 2023. All rights reserved.",
+  "license": "Apache-2.0",
+  "private": true,
+  "config": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mendix/web-widgets.git"
+  },
+  "mxpackage": {
+    "name": "SelectionHelper",
+    "type": "widget",
+    "mpkName": "com.mendix.widget.web.SelectionHelper.mpk"
+  },
+  "marketplace": {
+    "minimumMXVersion": "9.24.0.2965",
+    "appName": "SelectionHelper"
+  },
+  "testProject": {
+    "githubUrl": "https://github.com/mendix/testProjects",
+    "branchName": "gallery-web"
+  },
+  "packagePath": "com.mendix.widget.web",
+  "scripts": {
+    "start": "pluggable-widgets-tools start:server",
+    "dev": "pluggable-widgets-tools start:web",
+    "build": "pluggable-widgets-tools build:web",
+    "format": "prettier --write .",
+    "lint": "eslint --ext .jsx,.js,.ts,.tsx src/",
+    "release": "pluggable-widgets-tools release:ts",
+    "verify": "rui-verify-package-format",
+    "update-changelog": "rui-update-changelog-widget"
+  },
+  "devDependencies": {
+    "@mendix-internal/automation-utils": "workspace:*",
+    "@mendix/eslint-config-web-widgets": "workspace:*",
+    "@mendix/pluggable-widgets-commons": "workspace:*",
+    "@mendix/pluggable-widgets-tools": "^9.24.1",
+    "@mendix/prettier-config-web-widgets": "workspace:*",
+    "cross-env": "^7.0.3"
+  }
+}

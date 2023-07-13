@@ -6,11 +6,11 @@ import {
     EditableValueBuilder,
     ListAttributeValueBuilder
 } from "@mendix/pluggable-widgets-commons";
-import { render, fireEvent, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { mount } from "enzyme";
 import { createContext, createElement } from "react";
 import DatagridTextFilter from "../../DatagridTextFilter";
-import { act } from "react-dom/test-utils";
 
 const commonProps = {
     class: "filter-custom-class",
@@ -30,7 +30,7 @@ describe("Text Filter", () => {
             delete (global as any)["com.mendix.widgets.web.UUID"];
         });
 
-        describe("sync input value with defaultValue prop", () => {
+        describe("with defaultValue prop", () => {
             beforeAll(() => {
                 (window as any)["com.mendix.widgets.web.filterable.filterContext"] = createContext({
                     filterDispatcher: jest.fn(),
@@ -38,7 +38,7 @@ describe("Text Filter", () => {
                 } as FilterContextValue);
             });
 
-            it("sync value when defaultValue changes from undefined to string", async () => {
+            it("don't sync value when defaultValue changes from undefined to string", async () => {
                 const { rerender } = render(<DatagridTextFilter {...commonProps} defaultValue={undefined} />);
 
                 expect(screen.getByRole("textbox")).toHaveValue("");
@@ -46,10 +46,10 @@ describe("Text Filter", () => {
                 // rerender component with new `defaultValue`
                 const defaultValue = dynamicValue<string>("xyz");
                 rerender(<DatagridTextFilter {...commonProps} defaultValue={defaultValue} />);
-                expect(screen.getByRole("textbox")).toHaveValue("xyz");
+                expect(screen.getByRole("textbox")).toHaveValue("");
             });
 
-            it("sync value when defaultValue changes from string to string", async () => {
+            it("don't sync value when defaultValue changes from string to string", async () => {
                 const { rerender } = render(
                     <DatagridTextFilter {...commonProps} defaultValue={dynamicValue<string>("abc")} />
                 );
@@ -59,10 +59,10 @@ describe("Text Filter", () => {
                 // rerender component with new `defaultValue`
                 const defaultValue = dynamicValue<string>("xyz");
                 rerender(<DatagridTextFilter {...commonProps} defaultValue={defaultValue} />);
-                expect(screen.getByRole("textbox")).toHaveValue("xyz");
+                expect(screen.getByRole("textbox")).toHaveValue("abc");
             });
 
-            it("sync value when defaultValue changes from string to undefined", async () => {
+            it("don't sync value when defaultValue changes from string to undefined", async () => {
                 const { rerender } = render(
                     <DatagridTextFilter {...commonProps} defaultValue={dynamicValue<string>("abc")} />
                 );
@@ -71,7 +71,7 @@ describe("Text Filter", () => {
 
                 // rerender component with new `defaultValue`
                 rerender(<DatagridTextFilter {...commonProps} defaultValue={undefined} />);
-                expect(screen.getByRole("textbox")).toHaveValue("");
+                expect(screen.getByRole("textbox")).toHaveValue("abc");
             });
         });
 
@@ -89,16 +89,15 @@ describe("Text Filter", () => {
                 expect(asFragment()).toMatchSnapshot();
             });
 
-            it("triggers attribute and onchange action on change filter value", () => {
+            it("triggers attribute and onchange action on change filter value", async () => {
                 const action = actionValue();
                 const attribute = new EditableValueBuilder<string>().build();
                 render(<DatagridTextFilter {...commonProps} onChange={action} valueAttribute={attribute} />);
 
-                fireEvent.change(screen.getByRole("textbox"), { target: { value: "B" } });
+                const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+                await user.type(screen.getByRole("textbox"), "B");
 
-                act(() => {
-                    jest.advanceTimersByTime(1000);
-                });
+                jest.runOnlyPendingTimers();
             });
 
             afterAll(() => {

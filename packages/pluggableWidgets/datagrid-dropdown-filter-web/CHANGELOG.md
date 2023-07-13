@@ -6,6 +6,36 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [2.4.3] - 2023-06-21
+
+### Fixed
+
+-   We fixed issue with initial filter condition.
+
+## [2.4.2] - 2023-06-09
+
+### Changed
+
+-   We fixed visilibity issue when dropdown filter is used with layers of modals/popups.
+
+## [2.4.1] - 2023-05-26
+
+### Changed
+
+-   We updated the light and dark icons and tiles for the widget.
+
+-   We changed colors in the structure mode preview for dark and light modes.
+
+## [2.4.0] - 2023-05-01
+
+### Fixed
+
+-   We fixed an issue with widget rendering and performance.
+
+### Breaking changes
+
+-   We introduce a breaking change that affects how widget is reacting on default value changes. Starting with this version, widget use the default value attribute only as an initial value, and any further changes to the default value attribute will be ignored.
+
 ## [2.3.0] - 2023-02-17
 
 ### Changed

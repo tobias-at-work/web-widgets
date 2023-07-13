@@ -6,6 +6,234 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [2.8.3] DataWidgets - 2023-06-28
+
+### [2.7.4] Datagrid
+
+#### Fixed
+
+-   We fixed an issue with text input in columns that has textbox or textarea.
+
+## [2.8.2] DataWidgets - 2023-06-21
+
+### Fixed
+
+-   We fixed popup menu showing on top of datagrid filter in sticky position.
+
+-   We removed dead span styling from module SCSS
+
+### [2.5.2] DatagridDateFilter
+
+#### Fixed
+
+-   We fixed issue with initial filter condition.
+
+### [2.4.3] DatagridDropdownFilter
+
+#### Fixed
+
+-   We fixed issue with initial filter condition.
+
+### [2.4.2] DatagridNumberFilter
+
+#### Fixed
+
+-   We fixed issue with initial filter condition.
+
+### [2.4.2] DatagridTextFilter
+
+#### Fixed
+
+-   We fixed issue with initial filter condition.
+
+## [2.8.1] DataWidgets - 2023-06-09
+
+### [2.4.2] DatagridDropdownFilter
+
+#### Changed
+
+-   We fixed visilibity issue when dropdown filter is used with layers of modals/popups.
+
+## [2.8.0] DataWidgets - 2023-05-26
+
+### [2.5.1] DatagridDateFilter
+
+#### Changed
+
+-   We changed colors in the structure mode preview for dark and light modes.
+
+-   We replaced glyphicons with internal icons
+
+-   We updated the light and dark icons and tiles for the widget.
+
+### [2.4.1] DatagridDropdownFilter
+
+#### Changed
+
+-   We updated the light and dark icons and tiles for the widget.
+
+-   We changed colors in the structure mode preview for dark and light modes.
+
+### [2.4.1] DatagridNumberFilter
+
+#### Changed
+
+-   We updated the light and dark icons and tiles for the widget.
+
+-   We changed colors in the structure mode preview for dark and light modes.
+
+### [2.4.1] DatagridTextFilter
+
+#### Changed
+
+-   We updated the light and dark icons and tiles for the widget.
+
+-   We changed colors in the structure mode preview for dark and light modes.
+
+### [2.7.3] Datagrid
+
+#### Changed
+
+-   We replaced glyphicons with internal icons
+
+-   We updated page explorer's caption to display datasource.
+
+-   We updated the light and dark icons and tiles for the widget.
+
+-   We changed colors in the structure mode preview for dark and light modes.
+
+#### Fixed
+
+-   We fix virtual scrolling issue
+
+### [1.1.1] DropdownSort
+
+#### Changed
+
+-   We updated the light and dark icons and tiles for the widget.
+
+-   We changed colors in the structure mode preview for dark and light modes.
+
+### [1.3.2] Gallery
+
+#### Changed
+
+-   We updated page explorer's caption to display datasource.
+
+-   We updated the light and dark icons and tiles for the widget.
+
+-   We changed colors in the structure mode preview for dark and light modes.
+
+#### Fixed
+
+-   We fix virtual scrolling issue
+
+### [1.0.2] SelectionHelper
+
+#### Changed
+
+-   We updated the light and dark icons and tiles for the widget.
+
+### [1.1.1] TreeNode
+
+#### Changed
+
+-   We updated page explorer's caption to display datasource.
+
+-   We updated the light and dark icons and tiles for the widget.
+
+-   We changed colors in the structure mode preview for dark and light modes.
+
+## [2.7.2] DataWidgets - 2023-05-02
+
+### [2.7.1] Datagrid
+
+#### Added
+
+-   It is now possible to add Selection helper widget into the header section of Data Grid 2.
+
+### [1.3.1] Gallery
+
+#### Changed
+
+-   Minor changes in the internal structure of the widget.
+
+### [1.0.1] SelectionHelper
+
+#### Added
+
+-   It is now possible to add selection helper in the header of the Data Grid 2 widget.
+
+## [2.7.1] DataWidgets - 2023-05-01
+
+### [2.5.0] DatagridDateFilter
+
+#### Fixed
+
+-   We fixed an issue with widget rendering and performance.
+
+#### Breaking changes
+
+-   We introduce a breaking change that affects how widget is reacting on default value changes. Starting with this version, widget use the default value attribute only as an initial value, and any further changes to the default value attribute will be ignored.
+
+### [2.4.0] DatagridDropdownFilter
+
+#### Fixed
+
+-   We fixed an issue with widget rendering and performance.
+
+#### Breaking changes
+
+-   We introduce a breaking change that affects how widget is reacting on default value changes. Starting with this version, widget use the default value attribute only as an initial value, and any further changes to the default value attribute will be ignored.
+
+### [2.4.0] DatagridNumberFilter
+
+#### Fixed
+
+-   We fixed an issue with widget rendering and performance.
+
+#### Breaking changes
+
+-   We introduce a breaking change that affects how widget is reacting on default value changes. Starting with this version, widget use the default value attribute only as an initial value, and any further changes to the default value attribute will be ignored.
+
+### [2.4.0] DatagridTextFilter
+
+#### Fixed
+
+-   We fixed an issue with widget rendering and performance.
+
+#### Breaking changes
+
+-   We introduce a breaking change that affects how widget is reacting on default value changes. Starting with this version, widget use the default value attribute only as an initial value, and any further changes to the default value attribute will be ignored.
+
+## [2.7.0] DataWidgets - 2023-03-29
+
+### [2.7.0] Datagrid
+
+#### Added
+
+-   With the new "Selection" property, it is now possible to make items in the grid selectable.
+
+### [1.3.0] Gallery
+
+#### Added
+
+-   With the new "Selection" property, it is now possible to make items in the gallery selectable. Additionally, it is possible to configure an "On selection change" action that runs when the selection changes.
+
+### [1.0.0] SelectionHelper
+
+#### Added
+
+-   We added Selection helper widget.
+
+## [2.6.1] DataWidgets - 2023-03-09
+
+### [2.6.1] Datagrid
+
+#### Added
+
+-   We added a new option for pagination placement: "Both". When enabled, pagination controls will be placed on the top and bottom of the data grid.
+
 ## [2.6.0] DataWidgets - 2023-02-17
 
 ### [2.3.0] DatagridDropdownFilter

@@ -6,6 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [1.4.1] - 2023-07-11
+
+### Fixed
+
+-   We fixed an issue with tabIndex being ignored.
+
+## [1.4.0] - 2023-06-05
+
+### Changed
+
+-   We updated page explorer's caption to display datasource.
+
+-   We updated the light and dark icons and tiles for the widget.
+
+-   We changed colors in the structure mode preview for dark and light modes.
+
+## [1.3.0] - 2023-03-29
+
+### Changed
+
+-   We added custom icon collections support.
+
 ## [1.2.1] - 2022-04-01
 
 ### Fixed

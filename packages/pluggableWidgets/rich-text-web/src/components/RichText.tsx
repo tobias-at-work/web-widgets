@@ -6,7 +6,7 @@ import classNames from "classnames";
 import { Editor } from "./Editor";
 
 export function RichText(props: RichTextContainerProps): JSX.Element | null {
-    const { width: w, height: h, widthUnit, heightUnit, readOnlyStyle, name, id } = props;
+    const { width: w, height: h, widthUnit, heightUnit, readOnlyStyle, id } = props;
     const [element, setElement] = useState<HTMLElement | null>(null);
 
     // Also wait for templateDatasource available to avoid editor-element-conflict exception
@@ -32,7 +32,7 @@ export function RichText(props: RichTextContainerProps): JSX.Element | null {
             className={classNames("widget-rich-text", `${readOnly ? `editor-${readOnlyStyle}` : ""}`)}
             style={{ width, height }}
         >
-            <div ref={setElement} id={name} />
+            <div ref={setElement} />
             {element ? <Editor element={element} widgetProps={props} /> : null}
         </div>
     );

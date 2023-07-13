@@ -20,12 +20,13 @@ export interface ImageWrapperProps {
     responsive: boolean;
     hasImage: boolean;
     children:
-        | ReactElement<ImageContentGlyphicon | ImageContentImage>
-        | [ReactElement<ImageContentGlyphicon | ImageContentImage>, ReactElement<LightboxProps> | false];
+        | ReactElement<ImageContentIcon | ImageContentImage>
+        | [ReactElement<ImageContentIcon | ImageContentImage>, ReactElement<LightboxProps> | false];
 }
 
 export interface ImageContentProps {
     style?: CSSProperties;
+    tabIndex?: number;
     onClick?: ReactEventHandler<HTMLElement>;
     altText?: string;
 }
@@ -45,12 +46,13 @@ function Wrapper(props: ImageWrapperProps): ReactElement {
     );
 }
 
-export interface ImageContentGlyphicon extends ImageContentProps {
+export interface ImageContentIcon extends ImageContentProps {
     icon: string | undefined;
     size: number;
+    isGlyph?: boolean;
 }
 
-function ContentGlyphicon(props: ImageContentGlyphicon): ReactElement {
+function ContentIcon(props: ImageContentIcon): ReactElement {
     const accessibilityProps = props.altText
         ? {
               "aria-label": props.altText,
@@ -58,11 +60,11 @@ function ContentGlyphicon(props: ImageContentGlyphicon): ReactElement {
           }
         : {};
 
-    const onClickProps = getImageContentOnClickProps(props.onClick);
+    const onClickProps = getImageContentOnClickProps(props.onClick, props.tabIndex);
 
     return (
         <span
-            className={classNames("glyphicon", props.icon)}
+            className={classNames(props.icon, { glyphicon: props.isGlyph })}
             style={{ ...props.style, fontSize: `${props.size}px` }}
             {...accessibilityProps}
             {...onClickProps}
@@ -80,7 +82,7 @@ export interface ImageContentImage extends ImageContentProps {
 }
 
 function ContentImage(props: ImageContentImage): ReactElement {
-    const onClickProps = getImageContentOnClickProps(props.onClick);
+    const onClickProps = getImageContentOnClickProps(props.onClick, props.tabIndex);
     return (
         <img
             className={props.className}
@@ -96,14 +98,17 @@ function ContentImage(props: ImageContentImage): ReactElement {
     );
 }
 
-function getImageContentOnClickProps(onClick: ImageContentProps["onClick"]): HTMLAttributes<HTMLElement> {
+function getImageContentOnClickProps(
+    onClick: ImageContentProps["onClick"],
+    tabIndex?: number
+): HTMLAttributes<HTMLElement> {
     if (!onClick) {
         return {};
     }
     return {
         onClick,
         role: "button",
-        tabIndex: 0,
+        tabIndex: tabIndex ?? 0,
         onKeyDown: event => {
             if (event.key === "Enter" || event.key === " ") {
                 onClick(event);
@@ -136,6 +141,6 @@ function BackgroundImage(props: BackgroundImageProps): ReactElement {
 export const ImageUi = {
     Wrapper,
     BackgroundImage,
-    ContentGlyphicon,
+    ContentIcon,
     ContentImage
 };

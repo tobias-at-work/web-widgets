@@ -29,6 +29,10 @@ $item-min-height: 32px;
 
     .btn-calendar {
         margin-left: 5px; //Review in atlas, the current date picker is also 5px
+        .button-icon {
+            width: 18px;
+            height: 18px;
+        }
     }
 }
 
@@ -181,7 +185,7 @@ $item-min-height: 32px;
     box-shadow: 0 2px 20px 1px rgba(5, 15, 129, 0.05), 0 2px 16px 0 rgba(33, 43, 54, 0.08);
     overflow-x: hidden;
     max-height: 40vh;
-    z-index: 102;
+    z-index: 140;
 
     &-section + &-section {
         border-top: 1px solid $form-input-border-color;
@@ -192,6 +196,7 @@ $item-min-height: 32px;
     position: sticky;
     bottom: 0;
     background: inherit;
+    z-index: 50;
 }
 
 .dropdown-footer-item {

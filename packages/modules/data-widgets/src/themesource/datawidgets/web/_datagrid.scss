@@ -14,6 +14,8 @@ $spacing-large: 24px !default;
 $grid-border-color: #ced0d3 !default;
 
 $brand-primary: #264ae5 !default;
+$brand-light: #e6eaff !default;
+$grid-selected-row-background: $brand-light;
 
 .table {
     position: relative;
@@ -47,7 +49,7 @@ $brand-primary: #264ae5 !default;
         position: -webkit-sticky; /* Safari */
         position: sticky;
         top: 0;
-        z-index: 1;
+        z-index: 50;
         min-width: 0;
 
         /* Clickable column header (Sortable) */
@@ -218,8 +220,7 @@ $brand-primary: #264ae5 !default;
             outline: none;
         }
 
-        > .td-text,
-        * {
+        > .td-text {
             white-space: nowrap;
             word-break: break-word;
             text-overflow: ellipsis;
@@ -251,26 +252,14 @@ $brand-primary: #264ae5 !default;
 
     .align-column-left {
         justify-content: flex-start;
-
-        span {
-            justify-content: flex-start;
-        }
     }
 
     .align-column-center {
         justify-content: center;
-
-        span {
-            justify-content: center;
-        }
     }
 
     .align-column-right {
         justify-content: flex-end;
-
-        span {
-            justify-content: flex-end;
-        }
     }
 }
 
@@ -311,6 +300,13 @@ $brand-primary: #264ae5 !default;
             outline: 1px solid $brand-primary;
         }
     }
+    .pagination-icon {
+        position: relative;
+        top: 4px;
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+    }
 }
 
 /* Column selector for hidable columns outside DG context */
@@ -343,6 +339,14 @@ $brand-primary: #264ae5 !default;
             margin: 8px;
             font-weight: normal;
             white-space: nowrap;
+        }
+    }
+}
+
+.widget-datagrid {
+    &.widget-datagrid-selection-method-click {
+        .tr.tr-selected .td {
+            background-color: $grid-selected-row-background;
         }
     }
 }

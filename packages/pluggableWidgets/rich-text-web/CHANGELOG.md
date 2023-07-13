@@ -6,11 +6,39 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-## [2.2.0] - 2023-02-27
-
 ### Added
 
 -   Enabled customization of CKEditor 4 content template plugin.
+
+## [2.2.0] - 2023-06-06
+
+### Changed
+
+-   We updated page explorer's caption to display datasource.
+
+-   We updated the light and dark icons and tiles for the widget.
+
+## [2.1.6] - 2023-04-18
+
+### Fixed
+
+-   We fixed an issue when Rich Text widget not saving data when user leaves the page quickly after editing.
+
+### Security
+
+-   Update ckeditor4 to version 4.21.0
+
+## [2.1.5] - 2023-03-24
+
+### Fixed
+
+-   We fixed an issue when Rich Text widget loosing focus after running onChange or onKeyPress microflow.
+
+## [2.1.4] - 2023-03-22
+
+### Fixed
+
+-   We fixed an issue with Rich Text widget not working correctly when another Rich Text widget is opened in a popup.
 
 ## [2.1.3] - 2023-01-31
 

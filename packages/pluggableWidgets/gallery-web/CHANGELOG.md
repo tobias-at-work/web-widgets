@@ -6,6 +6,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [1.3.2] - 2023-05-26
+
+### Changed
+
+-   We updated page explorer's caption to display datasource.
+
+-   We updated the light and dark icons and tiles for the widget.
+
+-   We changed colors in the structure mode preview for dark and light modes.
+
+### Fixed
+
+-   We fix virtual scrolling issue
+
+## [1.3.1] - 2023-05-02
+
+### Changed
+
+-   Minor changes in the internal structure of the widget.
+
+## [1.3.0] - 2023-03-29
+
+### Added
+
+-   With the new "Selection" property, it is now possible to make items in the gallery selectable. Additionally, it is possible to configure an "On selection change" action that runs when the selection changes.
+
 ## [1.2.0] - 2022-06-13
 
 ### Fixed

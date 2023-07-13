@@ -8,13 +8,18 @@ export interface GalleryProps<T extends ObjectItem> {
     desktopItems: number;
     emptyPlaceholderRenderer?: (renderWrapper: (children: ReactNode) => ReactElement) => ReactElement;
     emptyMessageTitle?: string;
-    filters?: ReactNode;
-    filtersTitle?: string;
-    hasFilters: boolean;
+    header?: ReactNode;
+    headerTitle?: string;
+    showHeader: boolean;
     hasMoreItems: boolean;
     items: T[];
     itemRenderer: (
-        renderWrapper: (children: ReactNode, className?: string, onClick?: () => void) => ReactElement,
+        renderWrapper: (
+            selected: boolean,
+            children: ReactNode,
+            className?: string,
+            onClick?: () => void
+        ) => ReactElement,
         item: T
     ) => ReactNode;
     numberOfItems?: number;
@@ -48,9 +53,9 @@ export function Gallery<T extends ObjectItem>(props: GalleryProps<T>): ReactElem
     return (
         <div className={classNames("widget-gallery", props.className)} data-focusindex={props.tabIndex || 0}>
             {props.paginationPosition === "above" && pagination}
-            {props.hasFilters ? (
-                <div className="widget-gallery-filter" role="section" aria-label={props.filtersTitle}>
-                    {props.filters}
+            {props.showHeader ? (
+                <div className="widget-gallery-filter" role="section" aria-label={props.headerTitle}>
+                    {props.header}
                 </div>
             ) : null}
 
@@ -68,12 +73,13 @@ export function Gallery<T extends ObjectItem>(props: GalleryProps<T>): ReactElem
                     role="list"
                 >
                     {props.items.map(item =>
-                        props.itemRenderer((children, className, onClick) => {
+                        props.itemRenderer((selected, children, className, onClick) => {
                             return (
                                 <div
                                     key={`item_${item.id}`}
                                     className={classNames("widget-gallery-item", className, {
-                                        "widget-gallery-clickable": !!onClick
+                                        "widget-gallery-clickable": !!onClick,
+                                        "widget-gallery-selected": selected
                                     })}
                                     onClick={onClick}
                                     onKeyDown={

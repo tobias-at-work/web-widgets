@@ -6,6 +6,46 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [2.7.4] - 2023-06-28
+
+### Fixed
+
+-   We fixed an issue with text input in columns that has textbox or textarea.
+
+## [2.7.3] - 2023-05-26
+
+### Changed
+
+-   We replaced glyphicons with internal icons
+
+-   We updated page explorer's caption to display datasource.
+
+-   We updated the light and dark icons and tiles for the widget.
+
+-   We changed colors in the structure mode preview for dark and light modes.
+
+### Fixed
+
+-   We fix virtual scrolling issue
+
+## [2.7.1] - 2023-05-02
+
+### Added
+
+-   It is now possible to add Selection helper widget into the header section of Data Grid 2.
+
+## [2.7.0] - 2023-03-29
+
+### Added
+
+-   With the new "Selection" property, it is now possible to make items in the grid selectable.
+
+## [2.6.1] - 2023-03-09
+
+### Added
+
+-   We added a new option for pagination placement: "Both". When enabled, pagination controls will be placed on the top and bottom of the data grid.
+
 ## [2.6.0] - 2023-02-17
 
 ### Changed

@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [2.8.0] - 2023-06-06
+
+### Changed
+
+-   We updated the light and dark icons and tiles for the actions.
+
+## [2.7.0] - 2023-03-15
+
+### Changed
+
+-   Update minimal supported version to Mendix Studio Pro 9.18.4 and above.
+
 ## [2.6.0] - 2022-11-10
 
 ### Fixed

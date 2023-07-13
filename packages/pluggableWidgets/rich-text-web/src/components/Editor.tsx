@@ -56,6 +56,9 @@ export class Editor extends Component<EditorProps> {
     element: HTMLElement;
     namespace: CKEditorNamespace;
     lastSentValue: string | undefined;
+    applyChangesDebounce: () => void;
+    cancelRAF: (() => void) | undefined;
+    hasFocus: boolean;
 
     constructor(props: EditorProps) {
         super(props);
@@ -65,10 +68,12 @@ export class Editor extends Component<EditorProps> {
         this.element = this.props.element;
         this.editorKey = this.getNewKey();
         this.editorHookProps = this.getNewEditorHookProps(true);
-        this.onChange = debounce(this.onChange.bind(this), 500);
+        this.onChange = this.onChange.bind(this);
+        this.applyChangesDebounce = debounce(this.applyChangesImmediately.bind(this), 500);
         this.onKeyPress = this.onKeyPress.bind(this);
         this.onPasteContent = this.onPasteContent.bind(this);
         this.onDropContent = this.onDropContent.bind(this);
+        this.hasFocus = false;
     }
 
     setNewRenderProps(updatePlugins: boolean): void {
@@ -107,11 +112,16 @@ export class Editor extends Component<EditorProps> {
             if (key === "stringAttribute") {
                 return false;
             }
-            if (prevProps[key] !== nextProps[key]) {
-                return true;
-            } else {
+
+            if (key === "onChange") {
                 return false;
             }
+
+            if (key === "onKeyPress") {
+                return false;
+            }
+
+            return prevProps[key] !== nextProps[key];
         });
     }
 
@@ -226,17 +236,21 @@ export class Editor extends Component<EditorProps> {
         }
     }
 
-    // onChange is wrapped in debounce, so, we always need to check
-    // weather we sill have editor.
     onChange(_event: CKEditorEventPayload<"change">): void {
         if (this.editor) {
             const editorData = this.editor.getData();
             const content = this.widgetProps.sanitizeContent ? DOMPurify.sanitize(editorData) : editorData;
             this.lastSentValue = content;
-            this.widgetProps.stringAttribute.setValue(content);
+            this.applyChangesDebounce();
         }
+    }
 
-        this.widgetProps.onChange?.execute();
+    applyChangesImmediately() {
+        // put last seen content to the attribute if it exists
+        if (this.lastSentValue !== undefined) {
+            this.widgetProps.stringAttribute.setValue(this.lastSentValue);
+            this.widgetProps.onChange?.execute();
+        }
     }
 
     addListeners(): void {
@@ -308,6 +322,25 @@ export class Editor extends Component<EditorProps> {
         this.lastSentValue = undefined;
     }
 
+    componentDidMount() {
+        this.cancelRAF = animationLoop(() => {
+            if (this.element && this.element.parentElement) {
+                const newHasFocus = this.element.parentElement.contains(document.activeElement);
+                if (newHasFocus !== this.hasFocus) {
+                    this.hasFocus = newHasFocus;
+                    if (!this.hasFocus) {
+                        // changed from true to false, user left the element, apply changes immediately
+                        this.applyChangesImmediately();
+                    }
+                }
+            }
+        });
+    }
+
+    componentWillUnmount() {
+        this.cancelRAF?.();
+    }
+
     componentDidUpdate(): void {
         const prevAttr = this.widgetProps.stringAttribute;
         const nextAttr = this.props.widgetProps.stringAttribute;
@@ -323,4 +356,19 @@ export class Editor extends Component<EditorProps> {
 
         return <MainEditor key={key} config={config} />;
     }
+}
+
+function animationLoop(callback: () => void): () => void {
+    let requestId: number;
+
+    const requestFrame = () => {
+        requestId = window.requestAnimationFrame(() => {
+            callback();
+            requestFrame();
+        });
+    };
+
+    requestFrame();
+
+    return () => window.cancelAnimationFrame(requestId);
 }

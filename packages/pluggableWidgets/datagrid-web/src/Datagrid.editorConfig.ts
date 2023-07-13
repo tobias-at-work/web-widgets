@@ -5,7 +5,8 @@ import {
     rowLayout,
     selectable,
     StructurePreviewProps,
-    text
+    text,
+    structurePreviewPalette
 } from "@mendix/pluggable-widgets-commons";
 import {
     changePropertyIn,
@@ -78,9 +79,8 @@ export function getProperties(
     if (values.showEmptyPlaceholder === "none") {
         hidePropertyIn(defaultProperties, values, "emptyPlaceholder");
     }
-    if (!values.showHeaderFilters) {
-        hidePropertyIn(defaultProperties, values, "filterList");
-    }
+
+    hideSelectionProperties(defaultProperties, values);
 
     changePropertyIn(
         defaultProperties,
@@ -125,7 +125,6 @@ export function getProperties(
                 "columnsHidable",
                 "configurationAttribute",
                 "onConfigurationChange",
-                "showHeaderFilters",
                 "filterList",
                 "filtersPlaceholder",
                 "filterSectionTitle"
@@ -140,6 +139,18 @@ export function getProperties(
     return defaultProperties;
 }
 
+function hideSelectionProperties(defaultProperties: Properties, values: DatagridPreviewProps): void {
+    const { itemSelection, itemSelectionMethod } = values;
+
+    if (itemSelection === "None") {
+        hidePropertiesIn(defaultProperties, values, ["itemSelectionMethod", "onSelectionChange"]);
+    }
+
+    if (itemSelection !== "Multi" || itemSelectionMethod !== "checkbox") {
+        hidePropertyIn(defaultProperties, values, "showSelectAllToggle");
+    }
+}
+
 export const getPreview = (
     values: DatagridPreviewProps,
     isDarkMode: boolean,
@@ -147,6 +158,7 @@ export const getPreview = (
 ): StructurePreviewProps => {
     const [x, y] = spVersion;
     const canHideDataSourceHeader = x >= 9 && y >= 20;
+    const palette = structurePreviewPalette[isDarkMode ? "dark" : "light"];
 
     const modeColor = (colorDark: string, colorLight: string): string => (isDarkMode ? colorDark : colorLight);
 
@@ -191,7 +203,7 @@ export const getPreview = (
                     : container({
                           padding: 8
                       })(
-                          text({ fontSize: 10 })(
+                          text({ fontSize: 10, fontColor: palette.text.secondary })(
                               column.showContentAs === "dynamicText"
                                   ? column.dynamicText ?? "Dynamic text"
                                   : `[${column.attribute ? column.attribute : "No attribute selected"}]`
@@ -200,27 +212,27 @@ export const getPreview = (
             )
         )
     );
-    const titleHeader = rowLayout({
+    const gridTitle = rowLayout({
         columnSize: "fixed",
-        backgroundColor: modeColor("#3B5C8F", "#DAEFFB"),
+        backgroundColor: palette.background.topbarData,
         borders: true,
         borderWidth: 1
     })(
         container({
             padding: 4
-        })(text({ fontColor: modeColor("#6DB1FE", "#2074C8") })("Data grid 2"))
+        })(text({ fontColor: palette.text.data })("Data grid 2"))
     );
-    const headerFilters = rowLayout({
+    const gridHeaderWidgets = rowLayout({
         columnSize: "fixed",
         borders: true
     })(
         dropzone(
-            dropzone.placeholder("Place filter widget(s) here"),
+            dropzone.placeholder("Place widgets like filter widget(s) and action button(s) here"),
             dropzone.hideDataSourceHeaderIf(canHideDataSourceHeader)
         )(values.filtersPlaceholder)
     );
 
-    const headers = rowLayout({
+    const columnHeaders = rowLayout({
         columnSize: "fixed"
     })(
         ...columnProps.map(column => {
@@ -233,7 +245,7 @@ export const getPreview = (
                             ? column.size
                             : 1
                         : undefined,
-                backgroundColor: isColumnHidden ? modeColor("#4F4F4F", "#DCDCDC") : modeColor("#3E3E3E", "#F5F5F5")
+                backgroundColor: isColumnHidden ? modeColor("#4F4F4F", "#DCDCDC") : palette.background.topbarStandard
             })(
                 container({
                     padding: 8
@@ -245,7 +257,7 @@ export const getPreview = (
                             ? undefined
                             : isColumnHidden
                             ? modeColor("#4F4F4F", "#DCDCDC")
-                            : modeColor("#3E3E3E", "#F5F5F5")
+                            : palette.text.secondary
                     })(column.header ? column.header : "Header")
                 ),
                 ...(hasColumns && values.columnsFilterable
@@ -264,7 +276,7 @@ export const getPreview = (
                 : content;
         })
     );
-    const footer =
+    const customEmptyMessageWidgets =
         values.showEmptyPlaceholder === "custom"
             ? [
                   rowLayout({
@@ -280,12 +292,12 @@ export const getPreview = (
             : [];
 
     return container()(
-        titleHeader,
+        gridTitle,
         ...(canHideDataSourceHeader ? [datasource(values.datasource)()] : []),
-        ...(values.showHeaderFilters && values.filterList.length > 0 ? [headerFilters] : []),
-        headers,
+        gridHeaderWidgets,
+        columnHeaders,
         ...Array.from({ length: 5 }).map(() => columns),
-        ...footer
+        ...customEmptyMessageWidgets
     );
 };
 
@@ -359,6 +371,19 @@ const checkSortingSettings = (
     }
 };
 
+const checkSelectionSettings = (values: DatagridPreviewProps): Problem[] => {
+    if (values.itemSelection !== "None" && values.onClick !== null) {
+        return [
+            {
+                property: "onClick",
+                message: '"On click action" must be set to "Do nothing" when "Selection" is enabled'
+            }
+        ];
+    }
+
+    return [];
+};
+
 export function check(values: DatagridPreviewProps): Problem[] {
     const errors: Problem[] = [];
 
@@ -381,5 +406,13 @@ export function check(values: DatagridPreviewProps): Problem[] {
         }
     });
 
+    errors.push(...checkSelectionSettings(values));
+
     return errors;
+}
+
+export function getCustomCaption(values: DatagridPreviewProps): string {
+    type DsProperty = { caption?: string };
+    const dsProperty: DsProperty = datasource(values.datasource)().property ?? {};
+    return dsProperty.caption || "Data grid 2";
 }

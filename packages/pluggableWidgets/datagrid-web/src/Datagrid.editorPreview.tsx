@@ -1,6 +1,6 @@
 // Disable warning that hooks can be used only in components
 /* eslint-disable react-hooks/rules-of-hooks */
-import { createElement, ReactElement, useCallback } from "react";
+import { createElement, ReactElement, ReactNode, useCallback } from "react";
 import { ColumnsPreviewType, DatagridPreviewProps } from "../typings/DatagridProps";
 
 import { Table, TableColumn } from "./components/Table";
@@ -9,6 +9,7 @@ import { Selectable } from "mendix/preview/Selectable";
 import { ObjectItem, GUID } from "mendix";
 import classNames from "classnames";
 import { isSortable } from "./features/column";
+import { selectionSettings, useOnSelectProps } from "./features/selection";
 
 const dummyColumns: ColumnsPreviewType[] = [
     {
@@ -44,6 +45,7 @@ export function preview(props: DatagridPreviewProps): ReactElement {
         (columnIndex: number, header: ReactElement) => {
             const column = columns[columnIndex];
             return (
+                // @ts-ignore
                 <Selectable
                     key={`selectable_column_${columnIndex}`}
                     caption={column.header.trim().length > 0 ? column.header : "[Empty caption]"}
@@ -57,7 +59,8 @@ export function preview(props: DatagridPreviewProps): ReactElement {
     );
 
     const EmptyPlaceholder = props.emptyPlaceholder.renderer;
-
+    const selectActionProps = useOnSelectProps(undefined);
+    const { selectionStatus, selectionMethod } = selectionSettings(props, undefined);
     return (
         <Table
             cellRenderer={useCallback(
@@ -89,7 +92,7 @@ export function preview(props: DatagridPreviewProps): ReactElement {
                 },
                 [columns, selectableWrapperRenderer]
             )}
-            className={props.className}
+            className={props.class}
             columns={transformColumnProps(columns)}
             columnsDraggable={props.columnsDraggable}
             columnsFilterable={props.columnsFilterable}
@@ -98,7 +101,7 @@ export function preview(props: DatagridPreviewProps): ReactElement {
             columnsSortable={props.columnsSortable}
             data={data}
             emptyPlaceholderRenderer={useCallback(
-                renderWrapper => (
+                (renderWrapper: (children: ReactNode) => ReactElement) => (
                     <EmptyPlaceholder caption="Empty list message: Place widgets here">
                         {renderWrapper(null)}
                     </EmptyPlaceholder>
@@ -119,12 +122,10 @@ export function preview(props: DatagridPreviewProps): ReactElement {
                 [columns]
             )}
             hasMoreItems={false}
-            headerFilters={
-                props.showHeaderFilters ? (
-                    <props.filtersPlaceholder.renderer caption="Place filter widget(s) here">
-                        <div />
-                    </props.filtersPlaceholder.renderer>
-                ) : null
+            gridHeaderWidgets={
+                <props.filtersPlaceholder.renderer caption="Place widgets like filter widget(s) and action button(s) here">
+                    <div />
+                </props.filtersPlaceholder.renderer>
             }
             headerWrapperRenderer={selectableWrapperRenderer}
             numberOfItems={5}
@@ -135,6 +136,11 @@ export function preview(props: DatagridPreviewProps): ReactElement {
             preview
             styles={parseStyle(props.style)}
             valueForSort={useCallback(() => undefined, [])}
+            onSelect={selectActionProps.onSelect}
+            onSelectAll={selectActionProps.onSelectAll}
+            isSelected={selectActionProps.isSelected}
+            selectionStatus={selectionStatus}
+            selectionMethod={selectionMethod}
         />
     );
 }

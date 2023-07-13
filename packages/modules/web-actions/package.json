@@ -1,7 +1,7 @@
 {
-  "name": "web-actions",
+  "name": "@mendix/web-actions",
   "moduleName": "Web Actions",
-  "version": "2.6.0",
+  "version": "2.8.0",
   "license": "Apache-2.0",
   "copyright": "© Mendix Technology BV 2023. All rights reserved.",
   "repository": {
@@ -15,7 +15,7 @@
   },
   "moduleFolderNameInModeler": "webactions",
   "marketplace": {
-    "minimumMXVersion": "9.12.0.41679",
+    "minimumMXVersion": "9.18.4.62522",
     "appNumber": 114337,
     "appName": "Web Actions"
   },
@@ -35,10 +35,6 @@
     "publish-marketplace": "rui-publish-marketplace"
   },
   "devDependencies": {
-    "@mendix-internal/automation-utils": "workspace:*",
-    "@types/node": "^18.13.0",
-    "eslint": "^7.32.0",
-    "ts-node": "^9.1.1",
-    "typescript": "4.5.4"
+    "@mendix-internal/automation-utils": "workspace:*"
   }
 }

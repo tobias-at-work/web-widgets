@@ -4,8 +4,10 @@
  * @author Mendix Widgets Framework Team
  */
 import { ComponentType, CSSProperties, ReactNode } from "react";
-import { DynamicValue, EditableValue, ListValue, ListActionValue, ListAttributeValue, ListExpressionValue, ListReferenceValue, ListReferenceSetValue, ListWidgetValue } from "mendix";
+import { ActionValue, DynamicValue, EditableValue, ListValue, ListActionValue, ListAttributeValue, ListExpressionValue, ListReferenceValue, ListReferenceSetValue, ListWidgetValue, SelectionSingleValue, SelectionMultiValue } from "mendix";
 import { Big } from "big.js";
+
+export type ItemSelectionMethodEnum = "checkbox" | "rowClick";
 
 export type ShowContentAsEnum = "attribute" | "dynamicText" | "customContent";
 
@@ -39,7 +41,7 @@ export interface ColumnsType {
 
 export type PaginationEnum = "buttons" | "virtualScrolling";
 
-export type PagingPositionEnum = "bottom" | "top";
+export type PagingPositionEnum = "bottom" | "top" | "both";
 
 export type ShowEmptyPlaceholderEnum = "none" | "custom";
 
@@ -50,13 +52,13 @@ export interface FilterListType {
 export interface ColumnsPreviewType {
     showContentAs: ShowContentAsEnum;
     attribute: string;
-    content: { widgetCount: number; renderer: ComponentType<{ caption?: string }> };
+    content: { widgetCount: number; renderer: ComponentType<{ children: ReactNode; caption?: string }> };
     dynamicText: string;
     header: string;
     tooltip: string;
-    filter: { widgetCount: number; renderer: ComponentType<{ caption?: string }> };
+    filter: { widgetCount: number; renderer: ComponentType<{ children: ReactNode; caption?: string }> };
     filterAssociation: string;
-    filterAssociationOptions: {} | { type: string } | null;
+    filterAssociationOptions: {} | { caption: string } | { type: string } | null;
     filterAssociationOptionLabel: string;
     sortable: boolean;
     resizable: boolean;
@@ -81,6 +83,9 @@ export interface DatagridContainerProps {
     advanced: boolean;
     datasource: ListValue;
     refreshInterval: number;
+    itemSelection?: SelectionSingleValue | SelectionMultiValue;
+    itemSelectionMethod: ItemSelectionMethodEnum;
+    showSelectAllToggle: boolean;
     columns: ColumnsType[];
     columnsFilterable: boolean;
     pageSize: number;
@@ -90,12 +95,12 @@ export interface DatagridContainerProps {
     emptyPlaceholder?: ReactNode;
     rowClass?: ListExpressionValue<string>;
     onClick?: ListActionValue;
+    onSelectionChange?: ActionValue;
     columnsSortable: boolean;
     columnsResizable: boolean;
     columnsDraggable: boolean;
     columnsHidable: boolean;
     configurationAttribute?: EditableValue<string>;
-    showHeaderFilters: boolean;
     filterList: FilterListType[];
     filtersPlaceholder?: ReactNode;
     filterSectionTitle?: DynamicValue<string>;
@@ -111,25 +116,28 @@ export interface DatagridPreviewProps {
     styleObject?: CSSProperties;
     readOnly: boolean;
     advanced: boolean;
-    datasource: {} | { type: string } | null;
+    datasource: {} | { caption: string } | { type: string } | null;
     refreshInterval: number | null;
+    itemSelection: "None" | "Single" | "Multi";
+    itemSelectionMethod: ItemSelectionMethodEnum;
+    showSelectAllToggle: boolean;
     columns: ColumnsPreviewType[];
     columnsFilterable: boolean;
     pageSize: number | null;
     pagination: PaginationEnum;
     pagingPosition: PagingPositionEnum;
     showEmptyPlaceholder: ShowEmptyPlaceholderEnum;
-    emptyPlaceholder: { widgetCount: number; renderer: ComponentType<{ caption?: string }> };
+    emptyPlaceholder: { widgetCount: number; renderer: ComponentType<{ children: ReactNode; caption?: string }> };
     rowClass: string;
     onClick: {} | null;
+    onSelectionChange: {} | null;
     columnsSortable: boolean;
     columnsResizable: boolean;
     columnsDraggable: boolean;
     columnsHidable: boolean;
     configurationAttribute: string;
     onConfigurationChange: {} | null;
-    showHeaderFilters: boolean;
     filterList: FilterListPreviewType[];
-    filtersPlaceholder: { widgetCount: number; renderer: ComponentType<{ caption?: string }> };
+    filtersPlaceholder: { widgetCount: number; renderer: ComponentType<{ children: ReactNode; caption?: string }> };
     filterSectionTitle: string;
 }

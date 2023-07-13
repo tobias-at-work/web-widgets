@@ -3,8 +3,6 @@ const path = require("path");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
-const widgetName = "AnyChart";
-
 const widgetConfig = {
     mode: "production",
     entry: {
@@ -44,7 +42,7 @@ const widgetConfig = {
                 { from: "src/AnyChart/AnyChart.xml", to: "./AnyChart/" },
                 { from: "src/AnyChart/package.xml", to: "./" },
                 {
-                    from: "src/AnyChart/AnyChart.@(tile|icon).png",
+                    from: "src/AnyChart/AnyChart.@(tile|icon)@(.dark|).png",
                     to: "./AnyChart/[name][ext]",
                     toType: "template"
                 }

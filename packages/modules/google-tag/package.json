@@ -1,7 +1,7 @@
 {
-  "name": "google-tag",
+  "name": "@mendix/google-tag",
   "moduleName": "Google Tag module",
-  "version": "1.0.0",
+  "version": "2.2.0",
   "license": "Apache-2.0",
   "copyright": "© Mendix Technology BV 2023. All rights reserved.",
   "private": true,
@@ -14,13 +14,13 @@
     "name": "GoogleTagModule",
     "mpkName": "GoogleTagModule.mpk",
     "dependencies": [
-      "google-tag-web"
+      "@mendix/google-tag-web"
     ]
   },
   "moduleFolderNameInModeler": "googletagmodule",
   "marketplace": {
-    "minimumMXVersion": "8.18.17.42711",
-    "appNumber": -1,
+    "minimumMXVersion": "9.18.4.62522",
+    "appNumber": 207519,
     "appName": "Google Tag"
   },
   "testProject": {
@@ -37,15 +37,11 @@
     "publish-marketplace": "rui-publish-marketplace"
   },
   "dependencies": {
-    "google-tag-web": "workspace:*"
+    "@mendix/google-tag-web": "workspace:*"
   },
   "devDependencies": {
     "@mendix-internal/automation-utils": "workspace:*",
     "@mendix/prettier-config-web-widgets": "workspace:*",
-    "@types/node": "^18.13.0",
-    "cross-env": "^7.0.3",
-    "eslint": "^7.32.0",
-    "ts-node": "^9.0.0",
-    "typescript": "4.5.4"
+    "cross-env": "^7.0.3"
   }
 }
