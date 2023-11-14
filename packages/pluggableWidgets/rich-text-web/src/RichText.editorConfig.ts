@@ -36,14 +36,54 @@ export function getProperties(
     defaultProperties: Properties,
     platform: "web" | "desktop"
 ): Properties {
-    if (values.preset !== "custom") {
+    if (values.preset === "custom") {
+        if (values.toolbarConfig === "basic") {
+            hidePropertiesIn(defaultProperties, values, [
+                "advancedConfig",
+                "templates",
+                "templateDatasource",
+                "templateTitleAttribute",
+                "templateDescriptionAttribute",
+                "templateHtmlAttribute"
+            ]);
+        }
+        if (values.toolbarConfig === "advanced") {
+            hidePropertiesIn(defaultProperties, values, toolbarGroups);
+            if (values.advancedConfig.filter(e => e.ctItemType === "Templates").length < 1) {
+                hidePropertiesIn(defaultProperties, values, [
+                    "templates",
+                    "templateDatasource",
+                    "templateTitleAttribute",
+                    "templateDescriptionAttribute",
+                    "templateHtmlAttribute"
+                ]);
+            } else if (values.templates === "default") {
+                hidePropertiesIn(defaultProperties, values, [
+                    "templateDatasource",
+                    "templateTitleAttribute",
+                    "templateDescriptionAttribute",
+                    "templateHtmlAttribute"
+                ]);
+            }
+        }
+    } else {
         hidePropertiesIn(defaultProperties, values, toolbarGroups.concat(["toolbarConfig", "advancedConfig"]));
-    }
-    if (values.toolbarConfig === "basic") {
-        hidePropertiesIn(defaultProperties, values, ["advancedConfig"]);
-    }
-    if (values.toolbarConfig === "advanced") {
-        hidePropertiesIn(defaultProperties, values, toolbarGroups);
+        if (values.preset === "basic" || values.preset === "standard") {
+            hidePropertiesIn(defaultProperties, values, [
+                "templates",
+                "templateDatasource",
+                "templateTitleAttribute",
+                "templateDescriptionAttribute",
+                "templateHtmlAttribute"
+            ]);
+        } else if (values.templates === "default") {
+            hidePropertiesIn(defaultProperties, values, [
+                "templateDatasource",
+                "templateTitleAttribute",
+                "templateDescriptionAttribute",
+                "templateHtmlAttribute"
+            ]);
+        }
     }
     if (values.advancedContentFilter === "auto") {
         hidePropertiesIn(defaultProperties, values, ["allowedContent", "disallowedContent"]);

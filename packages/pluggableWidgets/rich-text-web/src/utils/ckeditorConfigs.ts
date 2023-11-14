@@ -58,14 +58,14 @@ export function defineEnterMode(type: string): number {
     }
 }
 
-export function getPreset(type: PresetEnum): CKEditorConfig {
+export function getPreset(type: PresetEnum, templates = "default"): CKEditorConfig {
     switch (type) {
         case "standard":
             return createPreset("standard");
         case "basic":
             return createPreset("basic");
         case "full":
-            return createPreset("full");
+            return createPreset("full", templates);
         default:
             return createPreset("basic");
     }
@@ -141,16 +141,16 @@ export function defineStyleSet(widgetProps: RichTextContainerProps): Style[] | s
 }
 
 export function getToolbarConfig(widgetProps: RichTextContainerProps): CKEditorConfig {
-    const { preset, toolbarConfig } = widgetProps;
+    const { preset, toolbarConfig, templates } = widgetProps;
 
     if (preset !== "custom") {
-        return getPreset(preset);
+        return getPreset(preset, templates);
     }
 
     const isBasic = toolbarConfig === "basic";
     const groupItems = isBasic ? defineBasicGroups(widgetProps) : defineAdvancedGroups(widgetProps);
 
-    return createCustomToolbar(groupItems, isBasic);
+    return createCustomToolbar(groupItems, isBasic, templates);
 }
 
 export function getCKEditorConfig(widgetProps: RichTextContainerProps): CKEditorConfig {
